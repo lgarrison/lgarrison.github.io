@@ -1,0 +1,6 @@
+.grid-sizer,
+.grid-item { width: 100px;
+            margin-bottom: 2%;
+            }
+
+.gutter-sizer { width: 2%; }

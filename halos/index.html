@@ -3,43 +3,205 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>lgarrison.github.io by lgarrison</title>
+    <title>Lehman Garrison &mdash; Graduate Student, Harvard-Smithsonian Center for Astrophysics</title>
 
     <link rel="stylesheet" href="../stylesheets/styles.css">
     <link rel="stylesheet" href="../stylesheets/github-light.css">
+    <!--<link rel="stylesheet" href="stylesheets/halo_styles.css">-->
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <style>
+      .wrapper {
+        width:90%;
+        margin:0 auto;
+      }
+      @media print, screen and (min-width: 1100px){
+      section {
+        width:70%;
+      }
+      }
+    </style>
     <meta name="viewport" content="width=device-width">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      "HTML-CSS": {scale: 95}
+    });
+    </script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
   </head>
   <body>
     <div class="wrapper">
       <header>
-        <h1>lgarrison.github.io</h1>
-        <p></p>
+        <h1>Lehman Garrison</h1>
+        <p>Graduate Student, Harvard-Smithsonian Center for Astrophysics<br>
+          <a href="mailto:lgarrison@cfa.harvard.edu" class="email">lgarrison@cfa.harvard.edu</a></p>
 
 
         <p class="view"><a href="https://github.com/lgarrison">View My GitHub Profile</a></p>
 
       </header>
       <section>
-        <h2>
-<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Halo Visualization Gallery</h2>
+        <h2><a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Halo Visualization Gallery</h2>
+        
+        <p>Snapshots of the 100 most massive halos in a cosmological $N$-body simulation at redshift $z=1$.  The simulations were run with the Abacus $N$-body code (Garrison & Eisenstein, in prep.) with a Planck 2015 cosmology in a $562 {\rm~Mpc}/h$ box with $1440^3$ particles (particle mass $4\times 10^{10} {\rm~M_\odot}/h$).  Each image is a $15 {\rm~Mpc}\times 15 {\rm~Mpc}\times 5 {\rm~Mpc}$ slice through the center of the halo.</p>
+        
+        <p>The halos were visualized using Phil Mansfield's <a href="https://github.com/phil-mansfield/gotetra">Gotetra</a> code, which uses phase-sheet tesselation to preserve the dark matter caustics.  The renderings are only medium-resolution, because the underlying simulation itself is only medium-resolution (you can clearly see the individual phase sheets in the voids of the simulation).  One motivation of rendering many halos at medium resolution was to get a sense of the diversity of morphologies of halos in these simulations.  For examples of extremely high resolution images rendered with Gotetra, see <a href="http://www.benediktdiemer.com/visualization/images/">Benedikt Diemer's visualization page</a>, which was the inspiration for this gallery.</p>
+        
+        <p>Please cite Mansfield & Garrison if you would like to use these images.</p>
+        
+        <p>Click on a halo to see more!</p>
 
-<div class="grid">
-  <div class="grid-item">...</div>
-  <div class="grid-item grid-item--width2">...</div>
-  <div class="grid-item">...</div>
-  ...
-</div>
+        <!-- <div class="grid">
+          <div class="grid-sizer"></div>
+          <div class="gutter-sizer"></div>
+        </div>-->
+        
+        <div class="main">
+				<div class="gamma-container" id="gamma-container">
+					<ul class="gamma-gallery">
+						<!--<li>
+							<div data-alt="img03" data-description="<h3>Sky high</h3>" data-max-width="1800" data-max-height="1350">
+                                <div data-src="images/xsmall/3.jpg"></div>
+							</div>
+						</li>-->
+					</ul>
+
+					<div class="gamma-overlay"></div>
+				</div>
+
+			</div><!--/main-->
 
       </section>
       <footer>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+        <small>
+        <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a><br>Interactive gallery based on <a href="https://github.com/codrops/GammaGallery">Gamma Gallery</a> by codrops</p>
+        </small>
       </footer>
     </div>
     <script src="../javascripts/scale.fix.js"></script>
-    <script src="/path/to/masonry.pkgd.min.js"></script>
+    <script src="javascripts/papaparse.min.js"></script>
+    
+    <script>
+    
+        // init Masonry
+        var grid = document.querySelector('.gamma-gallery');
+      
+        function mathjax_float(float, prec){
+          mantissa = Math.log10(float)
+          base = Math.pow(10, mantissa - Math.floor(mantissa))
+          mantissa = Math.floor(mantissa)
+          if(mantissa == 0)
+            return base.toPrecision(prec);
+          return base.toPrecision(prec) + "\\times 10^{" + mantissa + "}";
+        }
+        var haloli;
+        function init_grid(halos){
+            for(var i = 0; i < halos.length; i++) {
+                haloli = document.createElement("li");
+                var halodiv = document.createElement("div");
+                halodiv.setAttribute('data-alt', "halo_" + halos[i].id);
+                halodiv.setAttribute('data-description', "<h3><table><tr><td class='field'>Halo ID:</td><td>" + halos[i].id +
+                                     "</td></tr><tr><td class='field'>Halo mass $M_{\\rm vir}$:</td><td>$" + mathjax_float(halos[i].m,2) + 
+                                     "~{\\rm M_\\odot}/h$</td></tr><tr><td class='field'>Halo radius $R_{\\rm vir}$:</td><td>$" + mathjax_float(halos[i].r/1000, 2) + 
+                                     "~{\\rm Mpc}/h$</td></tr><tr><td class='field'>Number of halo particles:</td><td>" + halos[i].n_part + "</td></tr></table></h3>");
+                var haloimg = document.createElement("div");
+                haloimg.setAttribute("data-src", "images/halo_" + halos[i].id + ".png");
+                halodiv.appendChild(haloimg);
+                haloli.appendChild(halodiv);
+                grid.appendChild(haloli);
+            }
+        
+            /*var msnry = new Masonry( grid, {
+              itemSelector: '.grid-item',
+              columnWidth: '.grid-sizer',
+              percentPosition: true,
+              gutter: '.gutter-sizer'
+            });
+                
+            imagesLoaded( grid ).on( 'progress', function() {
+              // layout Masonry after each image loads
+              msnry.layout();
+            });*/
+        }
+    
+        // Parse the halo info and populate the grid
+        Papa.parse("halo_info.csv", {
+            complete: function(results) {
+                init_grid(results.data);
+            },
+            header: true,
+            download: true,
+            skipEmptyLines: true,
+            dynamicTyping: true
+        });
+        
+    </script>
+    <script src="javascripts/modernizr.custom.70736.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="javascripts/jquery.masonry.min.js"></script>
+    <script src="javascripts/jquery.history.js"></script>
+    <script src="javascripts/js-url.min.js"></script>
+    <script src="javascripts/jquerypp.custom.js"></script>
+    <script src="javascripts/gamma.js"></script>
+    <script type="text/javascript">
+        $(function() {
+
+            var GammaSettings = {
+                    // order is important!
+                    viewport : [ {
+                        width : 1200,
+                        columns : 10
+                    }, {
+                        width : 900,
+                        columns : 8
+                    }, {
+                        width : 500,
+                        columns : 6
+                    }, { 
+                        width : 320,
+                        columns : 4
+                    }, { 
+                        width : 0,
+                        columns : 4
+                    } ],
+                    
+                svImageTransitionSpeedFade : 1000,
+                svImageTransitionEasingFade : '',
+                svOpacity: 1.0,
+                svCallback: function(data) {
+                  if(!data.isTypeset){
+                    Gamma.isRendering = true;
+                    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+                    // Store the typeset version so we don't have to do it again
+                    MathJax.Hub.Queue([function(){
+                      data.description = Gamma.svDescription.html();
+                      data.isTypeset = true;
+                      Gamma.isRendering = false;
+                    }]);
+                  }
+                }
+            };
+
+            Gamma.init( GammaSettings, fncallback );
+
+
+            // Example how to add more items (just a dummy):
+
+            function fncallback() {
+                $( '#loadmore' ).show().on( 'click', function() {
+                    var newitems = ''
+                    Gamma.add( $( newitems ) );
+                } );
+                MathJax.Hub.Queue(["Typeset",MathJax.Hub, haloli]);
+            }
+
+        });
+
+    </script>	
+
     
   </body>
 </html>
