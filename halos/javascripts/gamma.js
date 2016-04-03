@@ -229,7 +229,6 @@ var Gamma = (function() {
 				}
 
 			} );
-
 		},
 		_config = function() {
 

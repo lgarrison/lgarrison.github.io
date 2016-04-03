@@ -60,7 +60,7 @@
         </div>-->
         
         <div class="main">
-				<div class="gamma-container" id="gamma-container">
+				<div class="gamma-container gamma-loading" id="gamma-container">
 					<ul class="gamma-gallery">
 						<!--<li>
 							<div data-alt="img03" data-description="<h3>Sky high</h3>" data-max-width="1800" data-max-height="1350">
@@ -86,57 +86,6 @@
     
     <script>
     
-        // init Masonry
-        var grid = document.querySelector('.gamma-gallery');
-      
-        function mathjax_float(float, prec){
-          mantissa = Math.log10(float)
-          base = Math.pow(10, mantissa - Math.floor(mantissa))
-          mantissa = Math.floor(mantissa)
-          if(mantissa == 0)
-            return base.toPrecision(prec);
-          return base.toPrecision(prec) + "\\times 10^{" + mantissa + "}";
-        }
-        var haloli;
-        function init_grid(halos){
-            for(var i = 0; i < halos.length; i++) {
-                haloli = document.createElement("li");
-                var halodiv = document.createElement("div");
-                halodiv.setAttribute('data-alt', "halo_" + halos[i].id);
-                halodiv.setAttribute('data-description', "<h3><table><tr><td class='field'>Halo ID:</td><td>" + halos[i].id +
-                                     "</td></tr><tr><td class='field'>Halo mass $M_{\\rm vir}$:</td><td>$" + mathjax_float(halos[i].m,2) + 
-                                     "~{\\rm M_\\odot}/h$</td></tr><tr><td class='field'>Halo radius $R_{\\rm vir}$:</td><td>$" + mathjax_float(halos[i].r/1000, 2) + 
-                                     "~{\\rm Mpc}/h$</td></tr><tr><td class='field'>Number of halo particles:</td><td>" + halos[i].n_part + "</td></tr></table></h3>");
-                var haloimg = document.createElement("div");
-                haloimg.setAttribute("data-src", "images/halo_" + halos[i].id + ".png");
-                halodiv.appendChild(haloimg);
-                haloli.appendChild(halodiv);
-                grid.appendChild(haloli);
-            }
-        
-            /*var msnry = new Masonry( grid, {
-              itemSelector: '.grid-item',
-              columnWidth: '.grid-sizer',
-              percentPosition: true,
-              gutter: '.gutter-sizer'
-            });
-                
-            imagesLoaded( grid ).on( 'progress', function() {
-              // layout Masonry after each image loads
-              msnry.layout();
-            });*/
-        }
-    
-        // Parse the halo info and populate the grid
-        Papa.parse("halo_info.csv", {
-            complete: function(results) {
-                init_grid(results.data);
-            },
-            header: true,
-            download: true,
-            skipEmptyLines: true,
-            dynamicTyping: true
-        });
         
     </script>
     <script src="javascripts/modernizr.custom.70736.js"></script>
@@ -147,26 +96,82 @@
     <script src="javascripts/jquerypp.custom.js"></script>
     <script src="javascripts/gamma.js"></script>
     <script type="text/javascript">
+        // jQuery document.ready callback
         $(function() {
+            // Build the grid
+            var grid = document.querySelector('.gamma-gallery');
+          
+            function mathjax_float(flt, prec){
+              mantissa = Math.log10(flt)
+              base = Math.pow(10, mantissa - Math.floor(mantissa))
+              mantissa = Math.floor(mantissa)
+              if(mantissa == 0)
+                return base.toPrecision(prec);
+              return base.toPrecision(prec) + "\\times 10^{" + mantissa + "}";
+            }
+            var haloli;
+            function init_grid(halos){
+                for(var i = 0; i < halos.length; i++) {
+                    haloli = document.createElement("li");
+                    var halodiv = document.createElement("div");
+                    halodiv.setAttribute('data-alt', "halo_" + halos[i].id);
+                    halodiv.setAttribute('data-description', "<h3><table><tr><td class='field'>Halo ID:</td><td>" + halos[i].id +
+                                         "</td></tr><tr><td class='field'>Halo mass $M_{\\rm vir}$:</td><td>$" + mathjax_float(halos[i].m,2) + 
+                                         "~{\\rm M_\\odot}/h$</td></tr><tr><td class='field'>Halo radius $R_{\\rm vir}$:</td><td>$" + mathjax_float(halos[i].r/1000, 2) + 
+                                         "~{\\rm Mpc}/h$</td></tr><tr><td class='field'>Number of halo particles:</td><td>" + halos[i].n_part + "</td></tr></table></h3>");
+                    var haloimg = document.createElement("div");
+                    haloimg.setAttribute("data-src", "images/halo_" + halos[i].id + ".png");
+                    halodiv.appendChild(haloimg);
+                    haloli.appendChild(halodiv);
+                    grid.appendChild(haloli);
+                }
+            
+                /*var msnry = new Masonry( grid, {
+                  itemSelector: '.grid-item',
+                  columnWidth: '.grid-sizer',
+                  percentPosition: true,
+                  gutter: '.gutter-sizer'
+                });
+                    
+                imagesLoaded( grid ).on( 'progress', function() {
+                  // layout Masonry after each image loads
+                  msnry.layout();
+                });*/
+            }
+        
+            // Parse the halo info and populate the grid
+            Papa.parse("halo_info.csv", {
+                complete: function(results) {
+                    init_grid(results.data);
+                    init_gamma();
+                },
+                header: true,
+                download: true,
+                skipEmptyLines: true,
+                dynamicTyping: true
+            });
 
+        });
+        
+        function init_gamma(){
             var GammaSettings = {
-                    // order is important!
-                    viewport : [ {
-                        width : 1200,
-                        columns : 10
-                    }, {
-                        width : 900,
-                        columns : 8
-                    }, {
-                        width : 500,
-                        columns : 6
-                    }, { 
-                        width : 320,
-                        columns : 4
-                    }, { 
-                        width : 0,
-                        columns : 4
-                    } ],
+                // order is important!
+                viewport : [ {
+                    width : 1200,
+                    columns : 10
+                }, {
+                    width : 900,
+                    columns : 8
+                }, {
+                    width : 500,
+                    columns : 6
+                }, { 
+                    width : 320,
+                    columns : 4
+                }, { 
+                    width : 0,
+                    columns : 4
+                } ],
                     
                 svImageTransitionSpeedFade : 1000,
                 svImageTransitionEasingFade : '',
@@ -183,23 +188,18 @@
                     }]);
                   }
                 }
-            };
-
-            Gamma.init( GammaSettings, fncallback );
-
-
-            // Example how to add more items (just a dummy):
-
-            function fncallback() {
-                $( '#loadmore' ).show().on( 'click', function() {
-                    var newitems = ''
-                    Gamma.add( $( newitems ) );
-                } );
-                MathJax.Hub.Queue(["Typeset",MathJax.Hub, haloli]);
+                };
+           
+                Gamma.init( GammaSettings, fncallback );
+                // Example how to add more items (just a dummy):
+                function fncallback() {
+                    $( '#loadmore' ).show().on( 'click', function() {
+                        var newitems = ''
+                        Gamma.add( $( newitems ) );
+                    } );
+                    // MathJax.Hub.Queue(["Typeset",MathJax.Hub, haloli]);
+                }
             }
-
-        });
-
     </script>	
 
     
